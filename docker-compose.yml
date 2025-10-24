@@ -1,6 +1,16 @@
 version: '3.9'
 
 services:
+  config-server:
+    build: ./config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+    networks:
+      - microservices-net
+
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.5
     container_name: keycloak
@@ -11,14 +21,16 @@ services:
       KC_DB_PASSWORD: keycloak
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HTTP_PORT: 8080
-      KC_HOSTNAME: localhost
+      KC_HTTP_PORT: 9000
+      KC_HOSTNAME: keycloak
     command:
       - start-dev
     ports:
-      - "9000:8080"
+      - "9000:9000"
     depends_on:
       - postgres
+    networks:
+      - microservices-net
 
   postgres:
     image: postgres:16
@@ -28,9 +40,15 @@ services:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: keycloak
     volumes:
-      - keycloak_data:/var/lib/postgresql/data
+      - ./keycloak_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge
 
 volumes:
   keycloak_data:

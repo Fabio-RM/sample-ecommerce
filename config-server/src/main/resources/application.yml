@@ -14,4 +14,4 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9000/realms/sample-ecommerce
+          issuer-uri: http://keycloak:9000/realms/sample-ecommerce
